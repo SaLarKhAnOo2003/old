@@ -1,42 +1,103 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import requests
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    ContextTypes,
+    filters
+)
 
-# ✅ BOT TOKEN
+# =========================
+# 🔐 خپل BOT TOKEN دلته واچوه
+# =========================
 TOKEN = "7975528068:AAGRjVzq88d4I7pz-cJiqr_f4wcy97gk34k"
 
-# ✅ ADMIN (ته)
-ADMIN_ID = 5887665463
+# =========================
+# DATA STORAGE (per user)
+# =========================
+USER_EMAILS = {}
 
-users = set()
+DOMAINS = [
+    "1secmail.com",
+    "1secmail.org",
+    "1secmail.net"
+]
 
+# =========================
+# START
+# =========================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    users.add(update.effective_user.id)
+    keyboard = [[d] for d in DOMAINS]
     await update.message.reply_text(
         "سلام 👋\n"
-        "دا FakeSalarGmailBot دی ✅\n"
-        "بوت فعال شو"
+        "FakeSalarGmailBot ته ښه راغلې ✅\n\n"
+        "د ایمیل جوړولو لپاره domain انتخاب کړه 👇",
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
-async def all_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id == ADMIN_ID:
-        await update.message.reply_text(f"ټول یوزران: {len(users)}")
-    else:
-        await update.message.reply_text("اجازه نه لرې ❌")
+# =========================
+# GENERATE EMAIL
+# =========================
+async def generate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [[d] for d in DOMAINS]
+    await update.message.reply_text(
+        "domain انتخاب کړه 👇",
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    )
 
-async def remove_user(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id == ADMIN_ID:
-        try:
-            uid = int(context.args[0])
-            users.discard(uid)
-            await update.message.reply_text("یوزر ریموف شو ✅")
-        except:
-            await update.message.reply_text("سم ID ولیکه")
-    else:
-        await update.message.reply_text("اجازه نه لرې ❌")
+# =========================
+# HANDLE DOMAIN SELECTION
+# =========================
+async def handle_domain(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    domain = update.message.text
+    user_id = update.message.from_user.id
 
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("users", all_users))
-app.add_handler(CommandHandler("remove", remove_user))
+    if domain not in DOMAINS:
+        await update.message.reply_text("❌ ناسم domain")
+        return
 
-app.run_polling()
+    url = f"https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1&domain={domain}"
+    email = requests.get(url).json()[0]
+
+    if user_id not in USER_EMAILS:
+        USER_EMAILS[user_id] = []
+
+    USER_EMAILS[user_id].append(email)
+
+    await update.message.reply_text(
+        f"📧 ایمیل جوړ شو:\n\n{email}"
+    )
+
+# =========================
+# SHOW USER EMAIL IDS
+# =========================
+async def show_ids(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
+
+    if user_id not in USER_EMAILS or not USER_EMAILS[user_id]:
+        await update.message.reply_text("❌ ته تر اوسه هیڅ ایمیل نه لرې")
+        return
+
+    text = "📂 ستا ټول ایمیلونه:\n\n"
+    for i, mail in enumerate(USER_EMAILS[user_id], start=1):
+        text += f"{i}. {mail}\n"
+
+    await update.message.reply_text(text)
+
+# =========================
+# MAIN
+# =========================
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("generate", generate))
+    app.add_handler(CommandHandler("id", show_ids))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_domain))
+
+    print("✅ Fake Mail Bot is running...")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
