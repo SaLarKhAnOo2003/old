@@ -1,4 +1,5 @@
 import requests
+import sqlite3
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
@@ -9,22 +10,41 @@ from telegram.ext import (
 )
 
 # =====================
-# 🔐 BOT TOKEN
+# 🔐 BOT TOKEN (خپل نوی TOKEN دلته واچوه)
 # =====================
-TOKEN = "7975528068:AAGRjVzq88d4I7pz-cJiqr_f4wcy97gk34k"
+TOKEN = "7975528068:AAGH-zHSVwc0xkUg9h0ePHK2nxYpcx99U4g"
 
 # =====================
-# DOMAINS
+# 🌐 DOMAINS
 # =====================
 DOMAINS = ["1secmail.com", "1secmail.org", "1secmail.net"]
 
 # =====================
-# USER STORAGE (RAM)
+# 💾 DATABASE (Permanent)
 # =====================
-USER_EMAILS = {}
+db = sqlite3.connect("emails.db", check_same_thread=False)
+cur = db.cursor()
+cur.execute("""
+CREATE TABLE IF NOT EXISTS emails (
+    user_id INTEGER,
+    email TEXT
+)
+""")
+db.commit()
 
 # =====================
-# START
+# 🧠 HELPERS
+# =====================
+def save_email(user_id, email):
+    cur.execute("INSERT INTO emails (user_id, email) VALUES (?, ?)", (user_id, email))
+    db.commit()
+
+def get_user_emails(user_id):
+    cur.execute("SELECT email FROM emails WHERE user_id = ?", (user_id,))
+    return [row[0] for row in cur.fetchall()]
+
+# =====================
+# ▶️ START
 # =====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -39,7 +59,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =====================
-# GENERATE EMAIL
+# 📧 GENERATE MENU
 # =====================
 async def generate_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[d] for d in DOMAINS]
@@ -49,7 +69,7 @@ async def generate_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =====================
-# HANDLE DOMAIN
+# 🌐 HANDLE DOMAIN
 # =====================
 async def handle_domain(update: Update, context: ContextTypes.DEFAULT_TYPE):
     domain = update.message.text
@@ -59,9 +79,9 @@ async def handle_domain(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     url = f"https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1&domain={domain}"
-    email = requests.get(url).json()[0]
+    email = requests.get(url, timeout=15).json()[0]
 
-    USER_EMAILS.setdefault(user_id, []).append(email)
+    save_email(user_id, email)
 
     await update.message.reply_text(
         f"✅ ایمیل جوړ شو:\n\n📧 {email}\n\n"
@@ -69,43 +89,49 @@ async def handle_domain(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # =====================
-# SHOW EMAIL IDS
+# 📂 SHOW EMAILS
 # =====================
 async def show_ids(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    emails = get_user_emails(user_id)
 
-    if user_id not in USER_EMAILS or not USER_EMAILS[user_id]:
+    if not emails:
         await update.message.reply_text("❌ ته تر اوسه ایمیل نه لرې")
         return
 
     text = "📂 ستا ایمیلونه:\n\n"
-    for i, mail in enumerate(USER_EMAILS[user_id], start=1):
+    for i, mail in enumerate(emails, start=1):
         text += f"{i}. {mail}\n"
 
     text += "\n📥 inbox مثال:\n/inbox 1"
     await update.message.reply_text(text)
 
 # =====================
-# INBOX
+# 📥 INBOX
 # =====================
 async def inbox(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    emails = get_user_emails(user_id)
 
     if not context.args:
         await update.message.reply_text("❌ کارول: /inbox 1")
         return
 
-    index = int(context.args[0]) - 1
+    try:
+        index = int(context.args[0]) - 1
+    except:
+        await update.message.reply_text("❌ ناسم نمبر")
+        return
 
-    if user_id not in USER_EMAILS or index >= len(USER_EMAILS[user_id]):
+    if index < 0 or index >= len(emails):
         await update.message.reply_text("❌ ناسم ایمیل نمبر")
         return
 
-    email = USER_EMAILS[user_id][index]
+    email = emails[index]
     login, domain = email.split("@")
 
     url = f"https://www.1secmail.com/api/v1/?action=getMessages&login={login}&domain={domain}"
-    messages = requests.get(url).json()
+    messages = requests.get(url, timeout=15).json()
 
     if not messages:
         await update.message.reply_text("📭 inbox خالي دی")
@@ -119,7 +145,7 @@ async def inbox(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(text)
 
 # =====================
-# READ EMAIL
+# 📖 READ EMAIL
 # =====================
 async def read_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
@@ -128,33 +154,45 @@ async def read_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     msg_id = context.args[0]
 
-    for emails in USER_EMAILS.values():
-        for email in emails:
-            login, domain = email.split("@")
-            url = f"https://www.1secmail.com/api/v1/?action=readMessage&login={login}&domain={domain}&id={msg_id}"
-            r = requests.get(url)
-            if r.status_code == 200 and "subject" in r.text:
-                data = r.json()
-                await update.message.reply_text(
-                    f"📧 From: {data['from']}\n"
-                    f"📌 Subject: {data['subject']}\n\n"
-                    f"{data.get('textBody') or data.get('htmlBody')}"
-                )
-                return
+    cur.execute("SELECT email FROM emails")
+    all_emails = [row[0] for row in cur.fetchall()]
+
+    for email in all_emails:
+        login, domain = email.split("@")
+        url = f"https://www.1secmail.com/api/v1/?action=readMessage&login={login}&domain={domain}&id={msg_id}"
+        r = requests.get(url, timeout=15)
+        if r.status_code == 200 and "subject" in r.text:
+            data = r.json()
+            body = data.get("textBody") or data.get("htmlBody") or ""
+            await update.message.reply_text(
+                f"📧 From: {data['from']}\n"
+                f"📌 Subject: {data['subject']}\n\n"
+                f"{body}"
+            )
+            return
 
     await update.message.reply_text("❌ ایمیل ونه موندل شو")
 
 # =====================
-# MENU HANDLER
+# 🧭 TEXT ROUTER (ONE HANDLER ONLY)
 # =====================
-async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.text == "📧 Generate Email":
+async def text_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+
+    if text == "📧 Generate Email":
         await generate_menu(update, context)
-    elif update.message.text == "📂 My Emails":
+        return
+
+    if text == "📂 My Emails":
         await show_ids(update, context)
+        return
+
+    if text in DOMAINS:
+        await handle_domain(update, context)
+        return
 
 # =====================
-# MAIN
+# 🚀 MAIN
 # =====================
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -163,9 +201,7 @@ def main():
     app.add_handler(CommandHandler("id", show_ids))
     app.add_handler(CommandHandler("inbox", inbox))
     app.add_handler(CommandHandler("read", read_email))
-
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_domain))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_router))
 
     print("✅ FakeSalarGmailBot running...")
     app.run_polling()
