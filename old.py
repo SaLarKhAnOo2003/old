@@ -1,137 +1,71 @@
-import threading
-from flask import Flask, request, render_template_string
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+import os
 
-# =========================
-# CONFIG
-# =========================
-BOT_TOKEN = "7975528068:AAFrXMynUlYZsqBgSvP1maZgznryBxBIgOE"
-PUBLIC_BASE_URL = "http://YOUR_PUBLIC_DOMAIN_OR_IP:8081"
+# =====================
+# BOT TOKEN
+# =====================
+TOKEN = "7975528068:AAF9QdOGpQ8HmgJy90oxksnXg32lvEOo-1k"
 
-# =========================
-# TELEGRAM BOT
-# =========================
+# =====================
+# APK FILE (same folder)
+# =====================
+APK_FILE = "LiteSocial.apk"   # <-- APK دې همدلته کیږده
+
+# =====================
+# START
+# =====================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    kb = [
-        ["📘 Facebook Demo"],
-        ["🎮 PUBG Demo"],
-        ["🎲 Ludo Demo"],
-        ["📷 Camera Demo"]
+    keyboard = [
+        ["📱 Download Lite Facebook App"],
+        ["ℹ️ About"]
     ]
     await update.message.reply_text(
-        "👋 Welcome!\n\n"
-        "This bot provides **LEGAL DEMO pages only**.\n"
-        "⚠️ Never enter real credentials.\n\n"
-        "Choose a demo:",
-        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+        "👋 سلام!\n\n"
+        "دا یو قانوني Lite Social App دی ✅\n"
+        "هیڅ معلومات نه اخلي ❌\n\n"
+        "👇 انتخاب وکړه:",
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
+# =====================
+# MENU
+# =====================
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
     text = update.message.text
 
-    pages = {
-        "📘 Facebook Demo": "facebook",
-        "🎮 PUBG Demo": "pubg",
-        "🎲 Ludo Demo": "ludo",
-        "📷 Camera Demo": "camera"
-    }
+    if text == "📱 Download Lite Facebook App":
+        if os.path.exists(APK_FILE):
+            await update.message.reply_document(
+                document=open(APK_FILE, "rb"),
+                caption=(
+                    "📦 Lite Social App\n\n"
+                    "⚠️ DEMO / WEBVIEW ONLY\n"
+                    "دا اپ یوازې اصلي Facebook ویب خلاصوي.\n"
+                    "Meta سره تړاو نه لري."
+                )
+            )
+        else:
+            await update.message.reply_text("❌ APK فایل ونه موندل شو")
 
-    if text in pages:
-        link = f"{PUBLIC_BASE_URL}/{pages[text]}?uid={uid}"
+    elif text == "ℹ️ About":
         await update.message.reply_text(
-            f"🔗 Demo Link:\n{link}\n\n"
-            "⚠️ DEMO ONLY – Do NOT use real data."
+            "ℹ️ معلومات:\n\n"
+            "✅ قانوني WebView App\n"
+            "✅ هیڅ لاګین یا صلفي نه اخلي\n"
+            "❌ جعلي پاڼې نه لري\n\n"
+            "دا اپ یوازې ویب‌سایټ خلاصوي."
         )
 
-# =========================
-# FLASK WEB APP
-# =========================
-app = Flask(__name__)
-
-BASE_HTML = """
-<!doctype html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{title}}</title>
-<style>
-body{font-family:system-ui;background:#f3f4f6;padding:16px}
-.card{background:#fff;border-radius:16px;padding:16px;max-width:420px;margin:auto;
-box-shadow:0 10px 30px rgba(0,0,0,.08)}
-.badge{display:inline-block;background:#eef2ff;color:#1877f2;
-padding:6px 10px;border-radius:999px;font-weight:700}
-.warn{background:#fff1f2;color:#7f1d1d;padding:12px;border-radius:12px;margin:12px 0}
-input,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #e5e7eb}
-button{width:100%;padding:12px;border-radius:14px;border:0;
-background:#1877f2;color:#fff;font-weight:700;margin-top:10px}
-.note{font-size:12px;color:#6b7280;text-align:center;margin-top:10px}
-</style>
-</head>
-<body>
-<div class="card">
-<span class="badge">DEMO</span>
-<h2>{{title}}</h2>
-<div class="warn">
-⚠️ This is a DEMO page.<br>
-❌ Do NOT enter real credentials.<br>
-✅ Use dummy/test text only.
-</div>
-{{body}}
-<div class="note">Legal Demo UI • No data is stored</div>
-</div>
-</body>
-</html>
-"""
-
-def demo_form(title, labels):
-    inputs = ""
-    for l in labels:
-        inputs += f"<label>{l}</label><input placeholder='demo_{l.lower()}'><br>"
-    inputs += "<button>Submit (Demo)</button>"
-    return render_template_string(
-        BASE_HTML,
-        title=title,
-        body=inputs
-    )
-
-@app.route("/facebook")
-def facebook():
-    return demo_form("Facebook Demo", ["Username", "Password"])
-
-@app.route("/pubg")
-def pubg():
-    return demo_form("PUBG Demo", ["Player ID", "Region"])
-
-@app.route("/ludo")
-def ludo():
-    return demo_form("Ludo Demo", ["Player Name"])
-
-@app.route("/camera")
-def camera():
-    body = """
-    <p>📷 Camera Demo UI</p>
-    <div class="warn">
-    Camera access is NOT enabled.<br>
-    This is a visual demo only.
-    </div>
-    <button disabled>Open Camera (Disabled)</button>
-    """
-    return render_template_string(BASE_HTML, title="Camera Demo", body=body)
-
-# =========================
-# RUN BOTH
-# =========================
-def run_flask():
-    app.run(host="0.0.0.0", port=8081)
-
+# =====================
+# MAIN
+# =====================
 def main():
-    threading.Thread(target=run_flask, daemon=True).start()
-    bot = ApplicationBuilder().token(BOT_TOKEN).build()
-    bot.add_handler(CommandHandler("start", start))
-    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
-    bot.run_polling()
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
+    print("✅ Bot Running...")
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
