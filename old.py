@@ -1,137 +1,177 @@
-import threading
-from flask import Flask, request, render_template_string
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# =========================
-# CONFIG
-# =========================
-BOT_TOKEN = "7975528068:AAHaP1gI5PzkkpjaOoI3Qu2p8QGSQp9j4PE"
-PUBLIC_BASE_URL = "https://salar-demo-bot.onrender.com"
+BOT_CREDIT = "🤖 دا بوټ د سالار خانو لخوا جوړ شوی"
 
-# =========================
-# TELEGRAM BOT
-# =========================
+# ===== START =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    kb = [
-        ["📘 Facebook Demo"],
-        ["🎮 PUBG Demo"],
-        ["🎲 Ludo Demo"],
-        ["📷 Camera Demo"]
+    keyboard = [
+        ["1️⃣ ترمیکس کمانډونه"],
+        ["2️⃣ سالار کمانډ"],
+        ["3️⃣ کورنا لیکنې"],
+        ["4️⃣ چت روم"],
+        ["5️⃣ ترمیکس ډاونلوډ"],
+        ["6️⃣ د مړ شوي شخص Facebook ID"]
     ]
     await update.message.reply_text(
-        "👋 Welcome!\n\n"
-        "This bot provides **LEGAL DEMO pages only**.\n"
-        "⚠️ Never enter real credentials.\n\n"
-        "Choose a demo:",
-        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+        f"👋 سلام!\nمهرباني وکړئ یو انتخاب وکړئ 👇\n\n{BOT_CREDIT}",
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
-async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
+# ===== TERMUX COMMANDS =====
+async def termux_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+📌 Termux Commands:
+
+pkg update
+pkg upgrade
+pkg install python
+pkg install git
+pip install requests
+pip install mechanize
+pip install bs4 futures
+pip install rich
+termux-setup-storage
+pip install pycurl
+""")
+
+# ===== SALAR COMMAND =====
+async def salar_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+📌 Salar Command:
+
+rm -rf SALAR
+git clone --depth=1 https://github.com/SaLarKhAnOo2003/SALAR.git
+cd SALAR
+python SALAR.py
+""")
+
+# ===== CONDOLENCE TEXTS =====
+async def condolence(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+🕊️ کورنا لیکنې:
+
+1️⃣
+The news of your death came to my hearing as a gun shot😪.
+He died during the protest in Nigeria 🇳🇬
+R.I.P 😭 brother ()
+
+---------------------
+
+2️⃣
+A good friend is blessing of God.
+I am heartbroken to hear about () death in car accident.
+Death date: 4/10/2024
+Time: 3:31pm
+
+---------------------
+
+3️⃣
+I'm still in shock that my best friend ()💔😭 is gone.
+Death date: 28/10/2024
+Time: 12:00pm
+
+---------------------
+
+4️⃣
+() May your soul rest in peace.
+Dead Date: 14/11/2024
+Dead Time: 9:33 am
+""")
+
+# ===== CHAT ROOM MENU =====
+async def chat_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        ["1️⃣ چت روم"],
+        ["2️⃣ چت روم"],
+        ["3️⃣ چت روم"],
+        ["4️⃣ چت روم"],
+        ["⬅️ شاته"]
+    ]
+    await update.message.reply_text(
+        "💬 چت روم انتخاب کړئ 👇",
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    )
+
+# ===== TERMUX DOWNLOAD =====
+async def termux_download(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+📥 Termux Download Links:
+
+1️⃣ https://f-droid.org/packages/com.termux/
+2️⃣ https://github.com/termux/termux-app/releases
+3️⃣ https://apkpure.com/termux/com.termux
+4️⃣ https://apkcombo.com/termux/com.termux/
+5️⃣ https://uptodown.com/android/termux
+""")
+
+# ===== MEMORIAL FACEBOOK =====
+async def memorial_facebook(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+🕊️ د مړ شوي شخص Facebook Memorial ID
+
+📌 لازم معلومات:
+1️⃣ د مړ شوي کس بشپړ نوم
+2️⃣ د هغه د Facebook پروفایل لینک
+3️⃣ د مرګ اسناد (Death Certificate / News)
+4️⃣ ستا خپل ایمیل
+5️⃣ ستا اړیکه له هغه شخص سره
+
+🔗 د فیسبوک رسمي فورم:
+https://www.facebook.com/help/contact/228813257197480
+
+ℹ️ یادونه:
+دا فورم یوازې د مړ شوي شخص د اکاونټ Memorial کولو لپاره دی،
+د فېک اکاونټ لپاره نه دی.
+
+""" + BOT_CREDIT)
+
+# ===== MESSAGE HANDLER =====
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
-    pages = {
-        "📘 Facebook Demo": "facebook",
-        "🎮 PUBG Demo": "pubg",
-        "🎲 Ludo Demo": "ludo",
-        "📷 Camera Demo": "camera"
-    }
+    if text == "1️⃣ ترمیکس کمانډونه":
+        await termux_commands(update, context)
 
-    if text in pages:
-        link = f"{PUBLIC_BASE_URL}/{pages[text]}?uid={uid}"
-        await update.message.reply_text(
-            f"🔗 Demo Link:\n{link}\n\n"
-            "⚠️ DEMO ONLY – Do NOT use real data."
-        )
+    elif text == "2️⃣ سالار کمانډ":
+        await salar_command(update, context)
 
-# =========================
-# FLASK WEB APP
-# =========================
-app = Flask(__name__)
+    elif text == "3️⃣ کورنا لیکنې":
+        await condolence(update, context)
 
-BASE_HTML = """
-<!doctype html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{title}}</title>
-<style>
-body{font-family:system-ui;background:#f3f4f6;padding:16px}
-.card{background:#fff;border-radius:16px;padding:16px;max-width:420px;margin:auto;
-box-shadow:0 10px 30px rgba(0,0,0,.08)}
-.badge{display:inline-block;background:#eef2ff;color:#1877f2;
-padding:6px 10px;border-radius:999px;font-weight:700}
-.warn{background:#fff1f2;color:#7f1d1d;padding:12px;border-radius:12px;margin:12px 0}
-input,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #e5e7eb}
-button{width:100%;padding:12px;border-radius:14px;border:0;
-background:#1877f2;color:#fff;font-weight:700;margin-top:10px}
-.note{font-size:12px;color:#6b7280;text-align:center;margin-top:10px}
-</style>
-</head>
-<body>
-<div class="card">
-<span class="badge">DEMO</span>
-<h2>{{title}}</h2>
-<div class="warn">
-⚠️ This is a DEMO page.<br>
-❌ Do NOT enter real credentials.<br>
-✅ Use dummy/test text only.
-</div>
-{{body}}
-<div class="note">Legal Demo UI • No data is stored</div>
-</div>
-</body>
-</html>
-"""
+    elif text == "4️⃣ چت روم":
+        await chat_menu(update, context)
 
-def demo_form(title, labels):
-    inputs = ""
-    for l in labels:
-        inputs += f"<label>{l}</label><input placeholder='demo_{l.lower()}'><br>"
-    inputs += "<button>Submit (Demo)</button>"
-    return render_template_string(
-        BASE_HTML,
-        title=title,
-        body=inputs
-    )
+    elif text == "5️⃣ ترمیکس ډاونلوډ":
+        await termux_download(update, context)
 
-@app.route("/facebook")
-def facebook():
-    return demo_form("Facebook Demo", ["Username", "Password"])
+    elif text == "6️⃣ د مړ شوي شخص Facebook ID":
+        await memorial_facebook(update, context)
 
-@app.route("/pubg")
-def pubg():
-    return demo_form("PUBG Demo", ["Player ID", "Region"])
+    elif text == "1️⃣ چت روم":
+        await update.message.reply_text("سلام زه سالار خانو یم، ستاسو نوم څه دی؟")
 
-@app.route("/ludo")
-def ludo():
-    return demo_form("Ludo Demo", ["Player Name"])
+    elif text == "2️⃣ چت روم":
+        await update.message.reply_text("زه هر وخت قهرمان یم او د افغانستان یم 🇦🇫")
 
-@app.route("/camera")
-def camera():
-    body = """
-    <p>📷 Camera Demo UI</p>
-    <div class="warn">
-    Camera access is NOT enabled.<br>
-    This is a visual demo only.
-    </div>
-    <button disabled>Open Camera (Disabled)</button>
-    """
-    return render_template_string(BASE_HTML, title="Camera Demo", body=body)
+    elif text == "3️⃣ چت روم":
+        await update.message.reply_text("زه کندهاری یم، ته د کوم ځای یې؟")
 
-# =========================
-# RUN BOTH
-# =========================
-def run_flask():
-    app.run(host="0.0.0.0", port=8081)
+    elif text == "4️⃣ چت روم":
+        await update.message.reply_text("هر ځای زه زنداباد، ته څوک یې؟")
 
+    elif text == "⬅️ شاته":
+        await start(update, context)
+
+# ===== MAIN =====
 def main():
-    threading.Thread(target=run_flask, daemon=True).start()
-    bot = ApplicationBuilder().token(BOT_TOKEN).build()
-    bot.add_handler(CommandHandler("start", start))
-    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
-    bot.run_polling()
+    app = ApplicationBuilder().token("8104728401:AAExuKzu-mSRW92ceF9BED406je0KmDp0xQ").build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    print("🤖 Bot is running...")
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
