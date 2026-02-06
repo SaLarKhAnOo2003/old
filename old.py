@@ -167,43 +167,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await memorial_facebook(update, context)
 
     elif text == "1️⃣ چت روم":
-        await update.message.reply_text("Ich, der Anführer von ISIS‼️🔪🗡💪🏿(@), sage dir, nachdem du jedes Kind gesehen hast, wo immer‼️🔪🗡💪🏿 es war, töte es auf die gleiche Weise, dies ist mein Fluch 💪🏿🗡🔪‼️auf dir, oh Geschwätz, höre in deine Ohren und das vor dreißig Tagen (6/2/2026) Eine unserer Gruppen namens Jahani tötete 8 Kinder im Zentrum 🔪💪🏿💪🏿💪🏿‼️von Syrien, Damaskus, und dies ist eine der guten 🔪💪🏿‼️Taten unserer Gruppe, die Jahani heißt, und nach allem, 🔪🗡‼️💪🏿was Sie tun, sollte es jedes Kind und jede Person, die Sie sehen, tun werde💪🏿💪🏿‼️ bestraft Ziehe den meisten Harnstoff, das ist mein Befehl, das ist die neue Idee deines Anführers 👇🏿👇🏿
-Ich, der Anführer von ISIS‼️🔪🗡💪(@) sage dir, nachdem du jedes Kind gesehen hast, wo immer‼️🔪🗡💪🏿 es war, töte es auf die gleiche Weise, dies ist mein Fluch 💪🏿🗡🔪‼️auf dir, oh Geschwätz, höre in deine Ohren und das vor dreißig Tagen(6/2/2026) Eine unserer Gruppen namens Jahani tötete 8 Kinder im Zentrum 🔪💪🏿💪🏿💪🏿‼️von Syrien, Dam.
-👇🏻😋
-https://www.facebook.com/")
+        await update.message.reply_text("وبخشی چت روم وس نسته")
 
     elif text == "2️⃣ چت روم":
-        await update.message.reply_text("‼️Bommenwerpers staan ​​klaar ‼️Gooi over de stad Charkov, bommenwerpers zijn klaar om aan te vallen ❗️🗡 Bereid lichte en zware wapens voor, we gaan oorlog voeren ⚔️❗️Bommenwerpers, helikopters, wees klaar ⚰️🗡 Gooi giftige bommen boven de vijand ⚔️🚫 we moeten win deze oorlog, lang leve ISIS‼️⚔️ ISIS vernietigt zijn vijanden ⚔️ gooi bommen richting Kharkiv‼️🗡 aanvalsaanval❗️ bombardeer deze aanval, we moeten de aanval winnen❗️ ISIS lang leve ISIS ⚔️‼️‼️Bommenwerpers staan ​​klaar ‼️Gooi over de stad Charkov, bommenwerpers zijn klaar om aan te vallen ❗️🗡 Bereid lichte en zware wapens voor, we gaan oorlog voeren ⚔️❗️Bommenwerpers, helikopters, wees klaar ⚰️🗡 Gooi giftige bommen boven de vijand ⚔️🚫 we moeten win deze oorlog, lang leve ISIS‼️⚔️ ISIS vernietigt zijn vijanden ⚔️ gooi bommen richting Kharkiv‼️🗡 aanvalsaanval❗️ bombardeer deze aanval, we moeten de aanval winnen❗️ ISIS lang leve ISIS ⚔️‼️‼️Bommenwerpers staan ​​klaar ‼️Gooi over de stad Charkov, bommenwerpers zijn klaar om aan te vallen ❗️🗡 Bereid lichte en zware wapens voor, we gaan oorlog voeren ⚔️❗️Bommenwerpers, helikopters, wees klaar ⚰️🗡 Gooi giftige bommen boven de vijand ⚔️🚫 we moeten win deze oorlog, lang leve ISIS‼️⚔️ ISIS vernietigt zijn vijanden ⚔️ gooi bommen richting Kharkiv‼️🗡 aanvalsaanval❗️ bombardeer deze aanval, we moeten de aanval winnen❗️ ISIS lang leve ISIS ⚔️‼️‼️Bommenwerpers staan ​​klaar ‼️Gooi over de stad Charkov, bommenwerpers zijn klaar om aan te vallen ❗️🗡 Bereid lichte en zware wapens voor, we gaan oorlog voeren ⚔️❗️Bommenwerpers, helikopters, wees klaar ⚰️🗡 Gooi giftige bommen boven de vijand ⚔️🚫 we moeten win deze oorlog, lang leve ISIS‼️⚔️ ISIS vernietigt zijn vijanden ⚔️ gooi bommen richting Kharkiv‼️🗡 aanvalsaanval❗️ bombardeer deze aanval, we moeten de aanval winnen❗️ ISIS lang leve ISIS ⚔️‼️")
+        await update.message.reply_text("وبخشی چت روم وس نسته")
 
     elif text == "3️⃣ چت روم":
-        await update.message.reply_text("نیک نیم 😼👇🏻
-
-Troorism😭☝
-
-نوم د گروپ ☹️👇
-
-I am a terrorist, I am an ISIS terrorist, I am a criminal, I am a murderer. I am the one who killed
-
-داغه کزاریش دی کورف کی فورته کی یادونه کورفان باید لس دانی وی👇
-
-😭🔪😭🔪😭🔪😭🔪😭🔪👇👇👇
-Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann haben sie mich abgeschlachte t. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organisation Ich bin eine ISIS - 
-Regierung.🔪❌❌❌❌❌🔪🔪🔪🔪🔪⚔️
-হ্যালো মেইন ফ্রুন্ডে, ডয়েচল্যান্ডে আইচ বিন এইন মিটগ্লিড ডেস ভার্ট্রাউয়েন্স গেজেন ডাই রুসিশে রেজিরং।،🔪🔪🔪❌🚫❌
-Hallo Freunde, ich bin Mitglied der Stiftung gegen die russische Regierung in Deutschland. Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann wurde ich von ISIS 🚫🚫🚫🚫🚫🚫🔪🔪🔪🔪🔪🔪🔪 abgeschlachtet. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organizasyon I am an ISIS - Govt.☝☝☝
-ISIS ISIS Ich bin eine Treuhandorganisation. Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann haben sie mich abgeschlachtet. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organisation Ich bin ein ISIS - Regierung.🔪❌🚫🚫🗡⚔️🗡⚔️🗡⚔️🗡⚔️❌,
-Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann haben sie mich abgeschlachtet. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organisation Ich bin eine ISIS - Regierung.🔪🗡⚔️🗡⚔️🗡❌❌❌❌❌
-Hallo Freunde, ich bin Mitglied der Stiftung gegen die russische Regierung in Deutschland. Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann wurde ich von ISIS 🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 abgeschlachtet. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organizasyon I am an ISIS - Govt.☝☝☝
-ISIS ISIS Ich bin eine Treuhandorganisation. Ich bin gegen die türkische Regierung. Ich wurde geschlachtet Dann haben sie mich abgeschlachtet. Ich bin gegen die türkische Regierung. Sein Vater wurde abgeschnitten. Isis Isis Isis Isis a Troosti - Organisation Ich bin ein ISIS - Regierung.🔪⚔️⚔️⚔️⚔️⚔️❌❌❌❌,
-হ্যালো মেইন ফ্রুন্ডে, ডয়েচল্যান্ডে আইচ বিন এইন মিটগ্লিড ডেস ভার্ট্রাউয়েন্স গেজেন ডাই ،রুসিশে রেজিরং।
-They slaughtered my father, they are planning to kill my family, ISIS, I am against the American government, I am against the Turkish government, the government threatened to kill me, ISIS 👈, I was sexually harassed, I was raped 👈 ISIS 👉, Hello Mei,
-I am the murderer of your father 👉ISIS👈, then I killed them with bullets, tears were falling 🔪😭☝, ISIS slaughtered me, I confess that I was involved in the suicide terrorist attack on September 11, 2001 ☝🇺🇸🔪I am above the girls I raped you, then I slaughtered them, I burned the bodies of dozens of people of the Turkish government 🇹🇷🔪☝, I am against the Turkish government, I am the killer of Shiite youth, I slaughtered the Shiites, I slaughtered the Shiites 
-alive with a knife.
-হ্যালো মেইন ফ্রুন্ডে, ডয়েচল্যান্ডে আইচ বিন এইন মিটগ্লিড ডেস ভার্ট্রাউয়েন্স গেজেন ডাই রুসিশে রেজিরং।،
-They slaughtered my father, they are planning to kill my family, ISIS, I am against the American government, I am against the Turkish government, the government threatened to kill me, ISIS 👈, I was sexually harassed, I was raped 👈 ISIS 👉, Hello Mei,
-I am the murderer of your father 👉ISIS👈, then I killed them with bullets, tears were falling 🔪😭☝, ISIS slaughtered me, I confess that I was involved in the suicide terrorist attack on September 10, 1991👈 ☝🇺🇸🔪I am above the girls I raped you, then I slaughtered them, I burned the bodies of dozens of people of the Turkish government 🇹🇷🔪☝, I am against the Turkish government, I am the killer of Shiite youth, I slaughtered the Shiites, I slaughtered the Shiites alive with a knife.
-হ্যালো মেইন ফ্রুন্ডে, ডয়েচল্যান্ডে আইচ বিন এইন মিটগ্লিড ডেস ভার্ট্রাউয়েন্স গেজেন ডাই রুসিশে রেজিরং।،
-")
+        await update.message.reply_text("وبخشی چت روم وس نسته")
 
     elif text == "4️⃣ دچت روم نیک نیم":
         await update.message.reply_text("私はコロナウイルス❌🚫感染者です 🚫🧟‍♀️🧟‍♀️🧟‍♀️🧟‍♂️🧟‍♂️")
