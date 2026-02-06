@@ -7,7 +7,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 # CONFIG
 # =========================
 BOT_TOKEN = "7975528068:AAGWBaosfDQPHGIj1kdl8gfB60Oi2958y1A"
-PUBLIC_BASE_URL = "https://yourname.trycloudflare.com"
+PUBLIC_BASE_URL = "https://yourapp.onrender.com"
 
 # =========================
 # TELEGRAM BOT
