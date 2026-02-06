@@ -6,8 +6,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 # =========================
 # CONFIG
 # =========================
-BOT_TOKEN = "7975528068:AAGWBaosfDQPHGIj1kdl8gfB60Oi2958y1A"
-PUBLIC_BASE_URL = "https://yourapp.onrender.com"
+BOT_TOKEN = "7975528068:AAHaP1gI5PzkkpjaOoI3Qu2p8QGSQp9j4PE"
+PUBLIC_BASE_URL = "https://salar-demo-bot.onrender.com"
 
 # =========================
 # TELEGRAM BOT
