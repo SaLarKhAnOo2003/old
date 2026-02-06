@@ -1,148 +1,137 @@
-import io, threading
-from datetime import datetime
+import threading
 from flask import Flask, request, render_template_string
-from telegram import Bot, Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# ========= CONFIG =========
+# =========================
+# CONFIG
+# =========================
 BOT_TOKEN = "7975528068:AAFrXMynUlYZsqBgSvP1maZgznryBxBIgOE"
-PUBLIC_BASE = "http://127.0.0.1:8081"  # وروسته د Cloudflare لینک دلته واچوه
-PORT = 8081
+PUBLIC_BASE_URL = "http://YOUR_PUBLIC_DOMAIN_OR_IP:8081"
 
-bot = Bot(BOT_TOKEN)
-app = Flask(__name__)
-
-# ========= TELEGRAM BOT =========
+# =========================
+# TELEGRAM BOT
+# =========================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    kb = [["🔵 Facebook Demo","🎮 PUBG Demo","🎲 Ludo Demo"]]
+    kb = [
+        ["📘 Facebook Demo"],
+        ["🎮 PUBG Demo"],
+        ["🎲 Ludo Demo"],
+        ["📷 Camera Demo"]
+    ]
     await update.message.reply_text(
-        "👋 سلام!\n"
-        "دا **قانوني DEMO** دی.\n"
-        "ریښتیني معلومات مه داخلوئ.\n\n"
-        "له مینو څخه انتخاب وکړه 👇",
+        "👋 Welcome!\n\n"
+        "This bot provides **LEGAL DEMO pages only**.\n"
+        "⚠️ Never enter real credentials.\n\n"
+        "Choose a demo:",
         reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
     )
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     uid = update.effective_user.id
-    t = update.message.text
-    if "Facebook" in t:
-        link = f"{PUBLIC_BASE}/demo/facebook?uid={uid}"
-    elif "PUBG" in t:
-        link = f"{PUBLIC_BASE}/demo/pubg?uid={uid}"
-    elif "Ludo" in t:
-        link = f"{PUBLIC_BASE}/demo/ludo?uid={uid}"
-    else:
-        return
-    await update.message.reply_text(f"🔗 Demo Link:\n{link}")
+    text = update.message.text
 
-def run_bot():
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
-    application.run_polling()
+    pages = {
+        "📘 Facebook Demo": "facebook",
+        "🎮 PUBG Demo": "pubg",
+        "🎲 Ludo Demo": "ludo",
+        "📷 Camera Demo": "camera"
+    }
 
-# ========= WEB TEMPLATES =========
-PAGE = """
+    if text in pages:
+        link = f"{PUBLIC_BASE_URL}/{pages[text]}?uid={uid}"
+        await update.message.reply_text(
+            f"🔗 Demo Link:\n{link}\n\n"
+            "⚠️ DEMO ONLY – Do NOT use real data."
+        )
+
+# =========================
+# FLASK WEB APP
+# =========================
+app = Flask(__name__)
+
+BASE_HTML = """
 <!doctype html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{title}}</title>
 <style>
-body{font-family:sans-serif;padding:16px;background:#f7f7f7}
-.card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-.warn{background:#ffe0e0;padding:12px;border-radius:10px;margin-bottom:12px}
-h2{margin-top:0}
-button{padding:10px 14px;font-size:16px;border-radius:10px;border:0;background:#2563eb;color:#fff}
-.secondary{background:#111827}
-video,img{width:100%;max-width:420px;border-radius:12px;margin-top:8px}
-textarea{width:100%;border-radius:10px;padding:10px}
+body{font-family:system-ui;background:#f3f4f6;padding:16px}
+.card{background:#fff;border-radius:16px;padding:16px;max-width:420px;margin:auto;
+box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.badge{display:inline-block;background:#eef2ff;color:#1877f2;
+padding:6px 10px;border-radius:999px;font-weight:700}
+.warn{background:#fff1f2;color:#7f1d1d;padding:12px;border-radius:12px;margin:12px 0}
+input,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #e5e7eb}
+button{width:100%;padding:12px;border-radius:14px;border:0;
+background:#1877f2;color:#fff;font-weight:700;margin-top:10px}
+.note{font-size:12px;color:#6b7280;text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="card">
-  <div class="warn">
-    ⚠️ DEMO – دا رښتینی لوګین نه دی.<br>
-    مهرباني وکړئ رښتیني معلومات مه داخلوئ.
-  </div>
-  <h2>{{title}}</h2>
-
-  <label>📝 Demo Text (Pashto/English):</label>
-  <textarea id="txt" rows="4" placeholder="دلته فیک متن ولیکئ…"></textarea>
-
-  <div style="margin:10px 0">
-    <button onclick="openCam()">📸 Open Camera</button>
-  </div>
-
-  <video id="v" autoplay playsinline></video>
-  <button class="secondary" onclick="take()">Take Photo</button>
-  <img id="p">
-
-  <div style="margin-top:12px">
-    <button onclick="send()">📤 Send to Bot</button>
-  </div>
+<span class="badge">DEMO</span>
+<h2>{{title}}</h2>
+<div class="warn">
+⚠️ This is a DEMO page.<br>
+❌ Do NOT enter real credentials.<br>
+✅ Use dummy/test text only.
 </div>
-
-<script>
-let stream, blob;
-async function openCam(){
-  stream = await navigator.mediaDevices.getUserMedia({video:true});
-  v.srcObject = stream;
-}
-function take(){
-  const c=document.createElement('canvas');
-  c.width=v.videoWidth; c.height=v.videoHeight;
-  c.getContext('2d').drawImage(v,0,0);
-  c.toBlob(b=>blob=b,'image/jpeg');
-  p.src=URL.createObjectURL(blob);
-}
-async function send(){
-  const f=new FormData();
-  f.append('uid', new URLSearchParams(location.search).get('uid'));
-  f.append('page', "{{title}}");
-  f.append('text', document.getElementById('txt').value);
-  if(blob) f.append('photo', blob);
-  await fetch('/submit',{method:'POST',body:f});
-  alert('Sent to bot ✅');
-}
-</script>
+{{body}}
+<div class="note">Legal Demo UI • No data is stored</div>
+</div>
 </body>
 </html>
 """
 
-@app.route("/demo/<name>")
-def demo(name):
-    title = {
-        "facebook":"Facebook Demo",
-        "pubg":"PUBG Demo",
-        "ludo":"Ludo Demo"
-    }.get(name,"Demo")
-    return render_template_string(PAGE, title=title)
-
-@app.route("/submit", methods=["POST"])
-def submit():
-    uid = int(request.form.get("uid"))
-    page = request.form.get("page","Demo")
-    text = request.form.get("text","")
-    photo = request.files.get("photo")
-
-    msg = (
-        f"🧪 {page}\n"
-        f"🆔 UserID: {uid}\n"
-        f"⏰ Time: {datetime.now()}\n\n"
-        f"📝 Text:\n{text}"
+def demo_form(title, labels):
+    inputs = ""
+    for l in labels:
+        inputs += f"<label>{l}</label><input placeholder='demo_{l.lower()}'><br>"
+    inputs += "<button>Submit (Demo)</button>"
+    return render_template_string(
+        BASE_HTML,
+        title=title,
+        body=inputs
     )
-    bot.send_message(chat_id=uid, text=msg)
 
-    if photo:
-        bio = io.BytesIO(photo.read())
-        bio.name = "selfie.jpg"
-        bot.send_photo(chat_id=uid, photo=bio, caption=f"📷 {page} Selfie")
+@app.route("/facebook")
+def facebook():
+    return demo_form("Facebook Demo", ["Username", "Password"])
 
-    return "OK"
+@app.route("/pubg")
+def pubg():
+    return demo_form("PUBG Demo", ["Player ID", "Region"])
 
-# ========= RUN =========
+@app.route("/ludo")
+def ludo():
+    return demo_form("Ludo Demo", ["Player Name"])
+
+@app.route("/camera")
+def camera():
+    body = """
+    <p>📷 Camera Demo UI</p>
+    <div class="warn">
+    Camera access is NOT enabled.<br>
+    This is a visual demo only.
+    </div>
+    <button disabled>Open Camera (Disabled)</button>
+    """
+    return render_template_string(BASE_HTML, title="Camera Demo", body=body)
+
+# =========================
+# RUN BOTH
+# =========================
+def run_flask():
+    app.run(host="0.0.0.0", port=8081)
+
+def main():
+    threading.Thread(target=run_flask, daemon=True).start()
+    bot = ApplicationBuilder().token(BOT_TOKEN).build()
+    bot.add_handler(CommandHandler("start", start))
+    bot.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, menu))
+    bot.run_polling()
+
 if __name__ == "__main__":
-    threading.Thread(target=run_bot).start()
-    app.run(host="0.0.0.0", port=PORT)
+    main()
