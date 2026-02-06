@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 
 BOT_CREDIT = "🤖 دا بوټ د سالار خانو لخوا جوړ شوی"
 
-# ===== START =====
+# ========= START =========
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         ["1️⃣ ترمیکس کمانډونه"],
@@ -11,15 +11,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ["3️⃣ کورنا لیکنې"],
         ["4️⃣ چت روم"],
         ["5️⃣ ترمیکس ډاونلوډ"],
-        ["6️⃣ دسالار واتساف"],
-        ["7️⃣ دکورنا سوی ایدی جوړول"]
+        ["6️⃣ د سالار واتساف"],
+        ["7️⃣ د مړ شوي شخص Facebook ID"]
     ]
     await update.message.reply_text(
-        f"👋 سلام!\nمهرباني وکړئ یو انتخاب وکړئ 👇\n\n{BOT_CREDIT}",
+        f"👋 سلام!\nیو انتخاب وټاکه 👇\n\n{BOT_CREDIT}",
         reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
-# ===== TERMUX COMMANDS =====
+# ========= TERMUX COMMANDS =========
 async def termux_commands(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
 📌 Termux Commands:
@@ -36,7 +36,7 @@ termux-setup-storage
 pip install pycurl
 """)
 
-# ===== SALAR COMMAND =====
+# ========= SALAR COMMAND =========
 async def salar_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
 📌 Salar Command:
@@ -47,60 +47,30 @@ cd SALAR
 python SALAR.py
 """)
 
-# ===== CONDOLENCE TEXTS =====
+# ========= CONDOLENCE =========
 async def condolence(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
 🕊️ کورنا لیکنې:
 
-1️⃣
-
-The news of your death came to my ears like a gun shot😭. He died during the bomb blast in Palestine 🇰🇼 R.I.P bro @  you will be in our hearts forever😭💔 pls remember my brother's account
-Date of Death 21/10/2025 Time 12:55 AM
----------------------------------------------------
-
-2️⃣
-
-() May your soul rest in peace and may God bless you with paradise. 
-I miss you so much. I see your Facebook messages every day. Every time I see your message, I cry.
-My Facebook friend was a soldier in the country of afghanistan who.😭May the soul of those killed by Hamas group rest in peace😭😓💔
-Dead Time 9:33 am 
-Dead Date 13/7/2024
----------------------------------------------------
-
-3️⃣
-
-(@) was my best friends😭❤️‍🔥 He died yesterday. May god give him heaven, Rest in peace my brother. We will miss you so much. May god give strength to your family to accept this sad truth. I request to facebook so they make his account memorialize, as everyone can pray for him.🤚🏽😭💔
-Rip my bro🌹🕊
----------------------------------------------------
-
-4️⃣
-Hello dear sir. Our soul is not permanent for living here but i am very sorry about my loss. My friend () has been died due to heart attack. He was well wisher for all humanity. I have never seen suck a kind person pls Facebook team help us to make memo my lovely friend's account. 
-Pls give hearts prays and many memories to my dear..
-Rest in peace 🕊️ dear 😭
----------------------------------------------------
-
-5️⃣
-
-I'm still in shock and disbelief that my best friend ( ) 💔😭 is gone. The pain of losing you is unbearable I miss you every second of every day I wish I could turn back the time and save you😭💐. rest in peace😭💐🕊️
-Death date 22/1/2025 time 11:30pm
----------------------------------------------------
+1️⃣ The news of your death came to my ears like a gunshot 😭
+2️⃣ A good friend is a blessing of God...
+3️⃣ I'm still in shock and disbelief...
+4️⃣ May your soul rest in peace...
+5️⃣ Rest in peace my brother 🌹🕊️
 """)
 
-# ===== CHAT ROOM MENU =====
-async def chat_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [
-        ["1️⃣ چت روم"],
-        ["2️⃣ چت روم"],
-        ["3️⃣ چت روم"],
-        ["4️⃣ چت روم"],
-        ["⬅️ شاته"]
-    ]
-    await update.message.reply_text(
-        "💬 چت روم انتخاب کړئ 👇",
-        reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-    )
+# ========= CHAT ROOM =========
+async def chat_room(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""
+💬 چت روم (ثابت پیغامونه):
 
-# ===== TERMUX DOWNLOAD =====
+1️⃣ سلام زه سالار خانو یم، ستاسو نوم څه دی؟
+2️⃣ زه هر وخت قهرمان یم او د افغانستان یم 🇦🇫
+3️⃣ زه کندهاری یم، ته د کوم ځای یې؟
+4️⃣ هر ځای زه زنداباد، ته څوک یې؟
+""")
+
+# ========= TERMUX DOWNLOAD =========
 async def termux_download(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
 📥 Termux Download Links:
@@ -112,79 +82,57 @@ async def termux_download(update: Update, context: ContextTypes.DEFAULT_TYPE):
 5️⃣ https://uptodown.com/android/termux
 """)
 
-# ===== Whatsap Group =====
-async def whatsap_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ========= WHATSAPP =========
+async def whatsapp(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
-💬 Whatsap Group Links:
+💬 د سالار واتساف ګروپ:
 
 https://chat.whatsapp.com/Lk71RwA3sny9m63fIElBKV?mode=ac_t
 """)
 
-# ===== MEMORIAL FACEBOOK =====
-async def memorial_facebook(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# ========= MEMORIAL FB =========
+async def memorial(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""
-🕊️ د مړ شوي شخص Facebook Memorial ID
+🕊️ د مړ شوي شخص Facebook Memorial
 
 📌 لازم معلومات:
-1️⃣ د مړ شوي کس بشپړ نوم
-2️⃣ دوهم دمر سوی شخص جیمیل
-3️⃣ دمری سوی شخص داسنادو دفیدایشت نیته
-4️⃣ دمر سوی شخص اسناد یادونه دفیدایشت نیته باید داسنادو فه رکم یی  او دایدی نوم او فیدایشت نیته هم باید داسنادو فه رکم وی
+1️⃣ بشپړ نوم
+2️⃣ د مړ شوي شخص ایمیل
+3️⃣ د مرګ سند (Death Certificate)
+4️⃣ ستا ایمیل
 
-
-🔗 د فیسبوک رسمي فورم:
+🔗 رسمي فورم:
 https://www.facebook.com/help/contact/228813257197480
 
-ℹ️ یادونه:
-دا فورم یوازې د مړ شوي شخص د اکاونټ Memorial کولو لپاره دی،
-د فېک اکاونټ لپاره نه دی.
-
+ℹ️ دا یوازې د حقیقي مړ شوي شخص لپاره دی.
 """ + BOT_CREDIT)
 
-# ===== MESSAGE HANDLER =====
+# ========= HANDLER =========
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
 
     if text == "1️⃣ ترمیکس کمانډونه":
         await termux_commands(update, context)
-
     elif text == "2️⃣ سالار کمانډ":
         await salar_command(update, context)
-
     elif text == "3️⃣ کورنا لیکنې":
         await condolence(update, context)
-
     elif text == "4️⃣ چت روم":
-        await chat_menu(update, context)
-
+        await chat_room(update, context)
     elif text == "5️⃣ ترمیکس ډاونلوډ":
         await termux_download(update, context)
-        
-    elif text == "6️⃣ دسالار واتساف":
-        await whatsap_group(update, context)
+    elif text == "6️⃣ د سالار واتساف":
+        await whatsapp(update, context)
+    elif text == "7️⃣ د مړ شوي شخص Facebook ID":
+        await memorial(update, context)
+    else:
+        await update.message.reply_text("❌ مهرباني وکړئ له مینو څخه انتخاب وکړئ")
 
-    elif text == "7️⃣ دکورنا سوی ایدی جوړول":
-        await memorial_facebook(update, context)
-
-    elif text == "1️⃣ چت روم":
-        await update.message.reply_text("وبخشی چت روم وس نسته")
-
-    elif text == "2️⃣ چت روم":
-        await update.message.reply_text("وبخشی چت روم وس نسته")
-
-    elif text == "3️⃣ چت روم":
-        await update.message.reply_text("وبخشی چت روم وس نسته")
-
-    elif text == "4️⃣ دچت روم نیک نیم":
-        await update.message.reply_text("私はコロナウイルス❌🚫感染者です 🚫🧟‍♀️🧟‍♀️🧟‍♀️🧟‍♂️🧟‍♂️")
-
-    elif text == "⬅️ شاته":
-        await start(update, context)
-
-# ===== MAIN =====
+# ========= MAIN =========
 def main():
-    app = ApplicationBuilder().token("8104728401:AAFWHpJ-mWLhc881Cktk_huE8v7Vkcwj8HE").build()
+    BOT_TOKEN = "8104728401:AAHztsToQBEROX5y1_V8E88lohvlZ96YyCU"
 
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
